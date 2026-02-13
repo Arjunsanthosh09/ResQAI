@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ambulance Navigation</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+        }
+
+        .header {
+            padding: 15px;
+            background: #1e293b;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #map {
+            height: 75vh;
+            width: 100%;
+        }
+
+        .info {
+            padding: 20px;
+            background: #1e293b;
+        }
+
+        .btn {
+            background: #38bdf8;
+            padding: 10px 20px;
+            border-radius: 6px;
+            color: black;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    🚑 Ambulance Driver Navigation
+</div>
+
+<div id="map"></div>
+
+<div class="info">
+    <p><strong>Accident:</strong> {{ accident.lat }}, {{ accident.lon }}</p>
+    <p><strong>Severity:</strong> {{ accident.severity }}</p>
+
+    <a class="btn"
+       href="https://www.google.com/maps/dir/{{ hospital.lat }},{{ hospital.lon }}/{{ accident.lat }},{{ accident.lon }}"
+       target="_blank">
+       Open in Google Maps App
+    </a>
+</div>
+
+<script>
+
+function initMap() {
+
+    const hospital = {
+        lat: {{ hospital.lat }},
+        lng: {{ hospital.lon }}
+    };
+
+    const accident = {
+        lat: {{ accident.lat }},
+        lng: {{ accident.lon }}
+    };
+
+    const map = new google.maps.Map(
+        document.getElementById("map"),
+        {
+            zoom: 13,
+            center: hospital
+        }
+    );
+
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+
+    directionsRenderer.setMap(map);
+
+    directionsService.route({
+        origin: hospital,
+        destination: accident,
+        travelMode: 'DRIVING'
+    }, function(result, status) {
+        if (status === 'OK') {
+            directionsRenderer.setDirections(result);
+        }
+    });
+}
+
+</script>
+
+<!-- Replace YOUR_API_KEY -->
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAp93B5FercEtrLyuADp8AGAUCZlxJCBhE&callback=initMap">
+</script>
+
+</body>
+</html>

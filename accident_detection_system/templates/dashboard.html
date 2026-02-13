@@ -3,444 +3,105 @@
 
 <head>
     <title>ResQAI Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap"
-        rel="stylesheet">
     <style>
-        :root {
-            --emergency-red: #FF0A54;
-            --alert-orange: #FF6B35;
-            --safe-green: #00FFA3;
-            --tech-cyan: #00E5FF;
-            --dark-bg: #0B0C10;
-            --card-bg: #1F2833;
-            --table-header: #151B28;
-            --border-glow: rgba(0, 229, 255, 0.3);
-            --text-primary: #C5C6C7;
-            --text-bright: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0;
-            animation: gridScroll 20s linear infinite;
-        }
-
-        @keyframes gridScroll {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 50px 50px;
-            }
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background:
-                radial-gradient(circle at 30% 40%, rgba(255, 10, 84, 0.1) 0%, transparent 30%),
-                radial-gradient(circle at 70% 60%, rgba(0, 229, 255, 0.08) 0%, transparent 30%);
-            z-index: 0;
-            animation: orbitOrbs 30s ease-in-out infinite;
-        }
-
-        @keyframes orbitOrbs {
-
-            0%,
-            100% {
-                transform: rotate(0deg) scale(1);
-            }
-
-            50% {
-                transform: rotate(180deg) scale(1.1);
-            }
-        }
-
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom,
-                    transparent 50%,
-                    rgba(0, 229, 255, 0.02) 51%,
-                    transparent 52%);
-            background-size: 100% 4px;
-            z-index: 1;
-            pointer-events: none;
-            animation: scan 8s linear infinite;
-        }
-
-        @keyframes scan {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 0 100%;
-            }
         }
 
         h2 {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 3.2rem;
-            font-weight: 700;
             text-align: center;
-            margin-bottom: 2.5rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--text-bright) 0%, var(--tech-cyan) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            z-index: 2;
-            animation: glowPulse 3s ease-in-out infinite, slideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes glowPulse {
-
-            0%,
-            100% {
-                filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
-            }
-
-            50% {
-                filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.9));
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin-bottom: 30px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: auto;
-            background: linear-gradient(145deg, rgba(31, 40, 51, 0.95), rgba(11, 12, 16, 0.98));
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow:
-                0 0 50px rgba(0, 229, 255, 0.2),
-                inset 0 0 30px rgba(0, 229, 255, 0.03);
-            border: 2px solid var(--border-glow);
-            position: relative;
-            z-index: 2;
-            animation: fadeIn 1s ease-out 0.3s both;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
         }
 
-        .container::before,
-        .container::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--tech-cyan);
-            opacity: 0.6;
+        .stat-card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            width: 30%;
+            text-align: center;
         }
 
-        .container::before {
-            top: -3px;
-            left: -3px;
-            border-right: none;
-            border-bottom: none;
-            border-top-left-radius: 20px;
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
         }
 
-        .container::after {
-            bottom: -3px;
-            right: -3px;
-            border-left: none;
-            border-top: none;
-            border-bottom-right-radius: 20px;
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.7;
         }
 
         .table-wrapper {
-            overflow-x: auto;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
             margin-top: 20px;
-            border-radius: 12px;
-            position: relative;
         }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: rgba(11, 12, 16, 0.5);
-            border-radius: 12px;
-            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
         }
 
         th {
-            background: linear-gradient(135deg, var(--table-header) 0%, rgba(21, 27, 40, 0.9) 100%);
-            color: var(--tech-cyan);
-            padding: 22px 20px;
-            text-align: center;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.15rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 2px solid var(--tech-cyan);
-            position: relative;
-        }
-
-        th::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--tech-cyan), transparent);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                opacity: 0.3;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        td {
-            padding: 20px 18px;
-            text-align: center;
-            font-size: 1.15rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            border-bottom: 1px solid rgba(197, 198, 199, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        tr {
-            transition: all 0.3s ease;
+            background: #334155;
         }
 
         tr:nth-child(even) {
-            background-color: rgba(31, 40, 51, 0.3);
-        }
-
-        tr:hover {
-            background: rgba(0, 229, 255, 0.08);
-            transform: scale(1.01);
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .severity-high,
-        .severity-medium,
-        .severity-low {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-weight: 700;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
+            background: #0f172a;
         }
 
         .severity-high {
-            background: linear-gradient(135deg, var(--emergency-red) 0%, #d91e42 100%);
-            color: var(--text-bright);
-            box-shadow:
-                0 0 15px rgba(255, 10, 84, 0.5),
-                inset 0 -2px 8px rgba(0, 0, 0, 0.3);
-            animation: criticalPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes criticalPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 15px rgba(255, 10, 84, 0.5), inset 0 -2px 8px rgba(0, 0, 0, 0.3);
-            }
-
-            50% {
-                box-shadow: 0 0 25px rgba(255, 10, 84, 0.8), inset 0 -2px 8px rgba(0, 0, 0, 0.3);
-            }
+            color: red;
+            font-weight: bold;
         }
 
         .severity-medium {
-            background: linear-gradient(135deg, var(--alert-orange) 0%, #ff8c42 100%);
-            color: var(--text-bright);
-            box-shadow:
-                0 0 12px rgba(255, 107, 53, 0.4),
-                inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+            color: orange;
+            font-weight: bold;
         }
 
         .severity-low {
-            background: linear-gradient(135deg, var(--safe-green) 0%, #00cc85 100%);
-            color: var(--dark-bg);
-            box-shadow:
-                0 0 12px rgba(0, 255, 163, 0.4),
-                inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+            color: lime;
+            font-weight: bold;
         }
 
-        td:first-child {
-            font-family: 'Share Tech Mono', monospace;
-            color: var(--tech-cyan);
-            font-weight: 600;
-        }
-
-        td:last-child {
-            font-weight: 600;
-            color: var(--text-bright);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-primary);
-            font-size: 1.2rem;
-        }
-
-        .empty-state::before {
-            content: '📊';
-            display: block;
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.3;
-        }
-
-        .stats-header {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 35px;
-            animation: fadeIn 1s ease-out 0.5s both;
-        }
-
-        .stat-card {
-            background: rgba(11, 12, 16, 0.6);
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 12px;
-            padding: 28px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            background: rgba(11, 12, 16, 0.8);
-            border-color: var(--tech-cyan);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 229, 255, 0.3);
-        }
-
-        .stat-value {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--tech-cyan);
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        @media (max-width: 768px) {
-            h2 {
-                font-size: 1.8rem;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            th,
-            td {
-                padding: 12px 8px;
-                font-size: 0.9rem;
-            }
-
-            .severity-high,
-            .severity-medium,
-            .severity-low {
-                padding: 4px 10px;
-                font-size: 0.75rem;
-            }
-
-            .stats-header {
-                grid-template-columns: 1fr;
-            }
+        #routeResult {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #38bdf8;
         }
     </style>
 </head>
 
 <body>
-    <div class="scanline"></div>
 
     <h2>🚨 ResQAI Accident Dashboard</h2>
 
     <div class="container">
+
+        <!-- ===== STATS ===== -->
         <div class="stats-header">
             <div class="stat-card">
                 <div class="stat-value">{{ accidents|length }}</div>
@@ -456,6 +117,7 @@
             </div>
         </div>
 
+        <!-- ===== ACCIDENT TABLE ===== -->
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -465,6 +127,7 @@
                         <th>Longitude</th>
                         <th>Severity</th>
                         <th>Station</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -483,11 +146,80 @@
                             {% endif %}
                         </td>
                         <td>{{ accident.station }}</td>
+                        <td>
+                            <a href="/optimize/{{ loop.index0 }}">
+                                <button>Optimize Route</button>
+                            </a>
+
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+
             </table>
         </div>
+
+        <!-- ===== LIVE TRAFFIC ===== -->
+        <h3 style="margin-top:40px;">🚦 Live Traffic Status</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Road</th>
+                        <th>Traffic</th>
+                        <th>Estimated Time</th>
+                    </tr>
+                </thead>
+                <tbody id="trafficBody"></tbody>
+            </table>
+        </div>
+
+        <!-- ===== EMERGENCY ROUTE ===== -->
+        <h3 style="margin-top:40px;">🧭 Emergency Route Optimization</h3>
+        <p id="routeResult"></p>
+
     </div>
+
+    <script>
+
+        // Load Traffic Table
+        function loadTraffic() {
+            fetch("/traffic_status")
+                .then(response => response.json())
+                .then(data => {
+
+                    let body = document.getElementById("trafficBody");
+                    body.innerHTML = "";
+
+                    data.forEach(row => {
+                        body.innerHTML += `
+                    <tr>
+                        <td>${row.road}</td>
+                        <td>${row.traffic}</td>
+                        <td>${row.time} min</td>
+                    </tr>
+                `;
+                    });
+                });
+        }
+
+
+        function optimizeRoute(id) {
+            fetch("/optimize_route/" + id)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("routeResult").innerHTML =
+                        "Accident ID: " + id +
+                        "<br>Best Route: " + data.path.join(" → ") +
+                        "<br>Estimated Time: " + data.estimated_time + " mins";
+                });
+        }
+
+
+
+    </script>
+
 </body>
+
 </html>

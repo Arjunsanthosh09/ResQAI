@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Driver Dashboard</title>
+    <style>
+        body {
+            background:#0f172a;
+            color:white;
+            font-family:Arial;
+            padding:20px;
+        }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th, td {
+            padding:10px;
+            text-align:center;
+        }
+
+        th {
+            background:#1e293b;
+        }
+
+        tr:nth-child(even){
+            background:#1e293b;
+        }
+
+        a {
+            background:#38bdf8;
+            padding:6px 12px;
+            border-radius:6px;
+            text-decoration:none;
+            color:black;
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Welcome {{ driver }}</h2>
+
+<h3>Assigned Accident Cases</h3>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Latitude</th>
+    <th>Longitude</th>
+    <th>Severity</th>
+    <th>Action</th>
+</tr>
+
+{% for accident in accidents %}
+<tr>
+    <td>{{ accident.id }}</td>
+    <td>{{ accident.lat }}</td>
+    <td>{{ accident.lon }}</td>
+    <td>{{ accident.severity }}</td>
+    <td>
+        <a href="/driver/{{ accident.id }}">Navigate</a>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>

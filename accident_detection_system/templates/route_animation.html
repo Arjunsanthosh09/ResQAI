@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Ambulance Routing</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            font-family: Arial;
+        }
+
+        svg {
+            background: #1e293b;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .road {
+            stroke: #4ade80;
+            stroke-width: 4;
+        }
+
+        .congested {
+            stroke: red;
+            stroke-width: 6;
+            stroke-dasharray: 10;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .node {
+            fill: yellow;
+        }
+
+        .hospital {
+            fill: lime;
+        }
+
+        .accident {
+            fill: orange;
+        }
+
+        .ambulance {
+            fill: red;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #38bdf8;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚑 Smart Ambulance Routing Control</h1>
+
+<button onclick="injectTraffic()">🚧 Inject Traffic</button>
+
+<svg width="800" height="500" id="map">
+
+    <!-- Roads -->
+    <line id="AB" class="road" x1="100" y1="100" x2="300" y2="120"/>
+    <line id="BC" class="road" x1="300" y1="120" x2="500" y2="200"/>
+    <line id="CD" class="road" x1="500" y1="200" x2="650" y2="350"/>
+    <line id="AC" class="road" x1="100" y1="100" x2="500" y2="200"/>
+
+    <!-- Nodes -->
+    <circle cx="100" cy="100" r="10" class="hospital"/>
+    <text x="80" y="80">Hospital</text>
+
+    <circle cx="650" cy="350" r="10" class="accident"/>
+    <text x="630" y="380">Accident</text>
+
+    <circle id="ambulance" cx="100" cy="100" r="8" class="ambulance"/>
+
+</svg>
+
+<script>
+
+let normalRoute = [
+    {x:100,y:100},
+    {x:300,y:120},
+    {x:500,y:200},
+    {x:650,y:350}
+];
+
+let alternateRoute = [
+    {x:100,y:100},
+    {x:500,y:200},
+    {x:650,y:350}
+];
+
+let ambulance = document.getElementById("ambulance");
+
+function move(route) {
+    let i = 0;
+
+    function step() {
+        if (i < route.length) {
+            ambulance.setAttribute("cx", route[i].x);
+            ambulance.setAttribute("cy", route[i].y);
+            i++;
+            setTimeout(step, 1000);
+        }
+    }
+
+    step();
+}
+
+move(normalRoute);
+
+function injectTraffic() {
+
+    alert("Heavy Traffic Detected on Main Road!");
+
+    // Make one road congested
+    document.getElementById("BC").classList.add("congested");
+
+    // Reroute ambulance
+    move(alternateRoute);
+}
+
+</script>
+
+</body>
+</html>
