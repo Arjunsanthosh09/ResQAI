@@ -15,7 +15,6 @@ while True:
 
     key = cv2.waitKey(1) & 0xFF
 
-    # Simulate accident
     if key == ord('a'):
         print("🚨 Accident Detected!")
         print("Time:", datetime.now())

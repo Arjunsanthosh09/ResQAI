@@ -5,20 +5,14 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import joblib
 
-# -----------------------------
-# 1️⃣ Accident Severity Model
-# -----------------------------
-
-# Fake training dataset (replace later with real data)
 np.random.seed(42)
 
 data = pd.DataFrame({
     "speed": np.random.randint(20, 120, 500),
-    "weather": np.random.randint(0, 3, 500),  # 0=clear,1=rain,2=fog
+    "weather": np.random.randint(0, 3, 500), 
     "hour": np.random.randint(0, 24, 500),
 })
 
-# Severity: 0=Low,1=Medium,2=High
 data["severity"] = (
     (data["speed"] > 80).astype(int)
     + (data["weather"] == 1).astype(int)
@@ -32,10 +26,6 @@ severity_model.fit(X, y)
 
 joblib.dump(severity_model, "severity_model.pkl")
 
-
-# -----------------------------
-# 2️⃣ Traffic Congestion Model
-# -----------------------------
 
 traffic_data = pd.DataFrame({
     "hour": np.random.randint(0, 24, 500),

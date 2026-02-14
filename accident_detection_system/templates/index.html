@@ -36,7 +36,6 @@
             padding-top: 80px;
         }
 
-        /* Navbar Styles */
         .navbar {
             position: fixed;
             top: 0;
@@ -114,7 +113,6 @@
             margin-left: 0.5rem;
         }
 
-        /* Main Content */
         .container {
             max-width: 600px;
             width: 90%;
@@ -297,7 +295,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Mobile Menu */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -368,7 +365,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo-section">
@@ -385,7 +381,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
         <h2>🚑 AI-Powered Accident Detection</h2>
         <p class="subtitle">Real-time emergency response system with intelligent detection</p>
@@ -522,8 +517,8 @@
                 let data = {
                     lat: lat,
                     lon: lon,
-                    speed: accValue,   // send acceleration as speed
-                    weather: 0         // 0 = clear (you can improve later)
+                    speed: accValue,   
+                    weather: 0       
                 };
 
                 if (navigator.onLine) {

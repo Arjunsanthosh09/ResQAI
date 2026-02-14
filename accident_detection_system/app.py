@@ -11,12 +11,10 @@ import pandas as pd
 from datetime import datetime
 from math import radians, cos, sin, sqrt, atan2
 
-# ------------------ APP INIT ------------------
 
 app = Flask(__name__)
 app.secret_key = "resqai_secret_key"
 
-# ------------------ DATABASE CONFIG ------------------
 
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
@@ -25,12 +23,10 @@ app.config["MYSQL_DB"] = "resqai"
 
 mysql = MySQL(app)
 
-# ------------------ LOAD AI MODELS ------------------
 
 severity_model = joblib.load("severity_model.pkl")
 traffic_model = joblib.load("traffic_model.pkl")
 
-# ------------------ LOAD MAP GRAPH ------------------
 
 GRAPH_FILE = "thrikkodithanam.graphml"
 
@@ -67,7 +63,6 @@ def smart_hospital_selection(lat, lon, severity):
 
     for hospital in hospitals:
 
-        # 1️⃣ Calculate distance
         distance = calculate_distance(
             lat,
             lon,
@@ -75,36 +70,28 @@ def smart_hospital_selection(lat, lon, severity):
             hospital["lon"]
         )
 
-        # 2️⃣ Get road_type from database
         road_type = hospital["road_type"]
 
-        # 3️⃣ Predict traffic delay using AI model
         delay_factor = traffic_model.predict(
             [[current_hour, road_type]]
         )[0]
 
-        # 4️⃣ Adjusted travel time
         adjusted_time = distance * delay_factor
 
-        # 5️⃣ Decision Logic
         if severity == 2:
-            # High severity → choose nearest hospital (fastest physical distance)
             if distance < best_score:
                 best_score = distance
                 best_hospital = hospital
         else:
-            # Low/Moderate → consider traffic delay
             if adjusted_time < best_score:
                 best_score = adjusted_time
                 best_hospital = hospital
 
-    # 6️⃣ Safety check
     if best_hospital is None:
         return "No Hospital Available"
 
     return best_hospital["name"]
 
-# ------------------ HELPER FUNCTIONS ------------------
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371
@@ -114,7 +101,6 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1-a))
     return R * c
 
-# ------------------ HOME ------------------
 
 @app.route("/")
 def home():
@@ -124,7 +110,6 @@ def home():
     cursor.close()
     return render_template("index.html", stations=stations)
 
-# ------------------ AI ACCIDENT ALERT ------------------
 
 @app.route("/alert", methods=["POST"])
 def alert():
@@ -133,10 +118,9 @@ def alert():
     lat = float(data["lat"])
     lon = float(data["lon"])
     speed = float(data["speed"])
-    weather = int(data["weather"])  # 0 clear,1 rain,2 fog
+    weather = int(data["weather"])
     hour = datetime.now().hour
 
-    # -------- AI Severity Prediction --------
     severity_input = pd.DataFrame(
         [[speed, weather, hour]],
         columns=["speed", "weather", "hour"]
@@ -151,7 +135,6 @@ def alert():
     }
     severity_label = severity_map.get(severity_code, "Low")
 
-    # -------- Find Nearest Hospital --------
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM hospitals")
     hospitals = cursor.fetchall()
@@ -173,9 +156,6 @@ def alert():
     "severity": severity_label,
     "confidence": round(confidence * 100, 2)
 })
-
-
-# ------------------ LOGIN ------------------
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -199,7 +179,6 @@ def login():
 
     return render_template("login.html")
 
-# ------------------ DASHBOARD ------------------
 
 @app.route("/dashboard")
 def dashboard():
@@ -217,16 +196,12 @@ def dashboard():
     cursor.close()
 
     return render_template("dashboard.html", accidents=data, hospital=hospital_name)
-# ============================================================
-# 🚑 AI ROUTE OPTIMIZATION (REAL AI REROUTING)
-# ============================================================
 
 @app.route("/optimize/<int:accident_id>")
 def optimize_route(accident_id):
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-    # -------- GET ACCIDENT --------
     cursor.execute("SELECT * FROM accidents WHERE id=%s", (accident_id,))
     accident = cursor.fetchone()
 
@@ -237,7 +212,6 @@ def optimize_route(accident_id):
     accident_lat = float(accident["lat"])
     accident_lon = float(accident["lon"])
 
-    # -------- GET HOSPITAL --------
     cursor.execute(
         "SELECT lat, lon FROM hospitals WHERE name=%s",
         (accident["station"],)
@@ -248,20 +222,13 @@ def optimize_route(accident_id):
     hospital_lat = float(hospital["lat"])
     hospital_lon = float(hospital["lon"])
 
-    # -------- NEAREST GRAPH NODES --------
     orig_node = ox.distance.nearest_nodes(G, accident_lon, accident_lat)
     dest_node = ox.distance.nearest_nodes(G, hospital_lon, hospital_lat)
 
-    # =====================================================
-    # 1️⃣ ORIGINAL ROUTE (NORMAL CONDITIONS)
-    # =====================================================
 
     route1 = nx.astar_path(G, orig_node, dest_node, weight="length")
     cost1 = nx.path_weight(G, route1, weight="length")
 
-    # =====================================================
-    # 2️⃣ SIMULATE AI TRAFFIC CONDITIONS
-    # =====================================================
 
     G_congested = G.copy()
     current_hour = datetime.now().hour
@@ -276,7 +243,6 @@ def optimize_route(accident_id):
             else:
                 road_type = 3
 
-        # AI Traffic Prediction
         traffic_input = pd.DataFrame(
             [[current_hour, road_type]],
             columns=["hour", "road_type"]
@@ -284,32 +250,21 @@ def optimize_route(accident_id):
 
         delay_factor = float(traffic_model.predict(traffic_input)[0])
 
-        # Random additional congestion (20%)
         if np.random.rand() < 0.20:
             delay_factor *= 2.5
             congested_edges.append((u, v))
 
         data["length"] *= delay_factor
 
-    # =====================================================
-    # 3️⃣ NEW ROUTE AFTER TRAFFIC
-    # =====================================================
 
     route2 = nx.astar_path(G_congested, orig_node, dest_node, weight="length")
     cost2 = nx.path_weight(G_congested, route2, weight="length")
-
-    # =====================================================
-    # 4️⃣ ETA CALCULATION
-    # =====================================================
 
     avg_speed_mps = 11.11  # 40 km/h
 
     eta1 = round(cost1 / avg_speed_mps / 60, 2)
     eta2 = round(cost2 / avg_speed_mps / 60, 2)
 
-    # =====================================================
-    # 5️⃣ SMART DECISION LOGIC
-    # =====================================================
 
     if cost2 < cost1:
         print("🚧 Better route found → AI Rerouting Enabled")
@@ -318,14 +273,9 @@ def optimize_route(accident_id):
         route2 = route1
         eta2 = eta1
 
-    # =====================================================
-    # 6️⃣ CONVERT TO COORDINATES
-    # =====================================================
-
     original_route = [(G.nodes[n]["y"], G.nodes[n]["x"]) for n in route1]
     new_route = [(G.nodes[n]["y"], G.nodes[n]["x"]) for n in route2]
 
-    # OPTIONAL: Send congested road segments
     congested_coords = []
     for u, v in congested_edges:
         lat1 = G.nodes[u]["y"]
@@ -334,9 +284,6 @@ def optimize_route(accident_id):
         lon2 = G.nodes[v]["x"]
         congested_coords.append([[lat1, lon1], [lat2, lon2]])
 
-    # =====================================================
-    # 7️⃣ RENDER TEMPLATE
-    # =====================================================
 
     return render_template(
         "route_animation.html",
@@ -351,9 +298,6 @@ def optimize_route(accident_id):
         congested_edges=congested_coords
     )
 
-
-
-# ------------------ RUN ------------------
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+

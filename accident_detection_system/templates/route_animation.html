@@ -36,7 +36,6 @@
             padding-top: 80px;
         }
 
-        /* Navbar Styles */
         .navbar {
             position: fixed;
             top: 0;
@@ -127,7 +126,6 @@
             border-color: var(--accent-blue);
         }
 
-        /* Mobile Menu */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -137,7 +135,6 @@
             color: var(--text-dark);
         }
 
-        /* Header Section */
         .header-section {
             background: var(--bg-white);
             border-bottom: 1px solid var(--border-gray);
@@ -173,7 +170,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Info Cards */
         .info-cards {
             display: flex;
             gap: 1rem;
@@ -223,7 +219,6 @@
             color: var(--success-green);
         }
 
-        /* Control Bar */
         .control-bar {
             background: var(--bg-white);
             border-bottom: 1px solid var(--border-gray);
@@ -278,7 +273,6 @@
             cursor: not-allowed;
         }
 
-        /* Map Container */
         .map-container {
             position: relative;
             height: calc(100vh - 280px);
@@ -291,7 +285,6 @@
             border-radius: 0;
         }
 
-        /* Legend */
         .map-legend {
             position: absolute;
             bottom: 20px;
@@ -343,7 +336,6 @@
             font-size: 1.25rem;
         }
 
-        /* Status Badge */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -392,7 +384,6 @@
             background: var(--primary-red);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .navbar {
                 padding: 1rem;
@@ -461,7 +452,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo-section">
@@ -482,7 +472,6 @@
         </div>
     </nav>
 
-    <!-- Header Section -->
     <div class="header-section">
         <div class="header-container">
             <div class="page-title">
@@ -504,7 +493,6 @@
         </div>
     </div>
 
-    <!-- Control Bar -->
     <div class="control-bar">
         <button class="control-btn primary" onclick="injectTraffic()" id="trafficBtn">
             <span>🚧</span>
@@ -520,7 +508,6 @@
         </button>
     </div>
 
-    <!-- Map Container -->
     <div class="map-container">
         <div class="status-badge" id="statusBadge">
             <span class="status-indicator active"></span>
@@ -529,7 +516,6 @@
 
         <div id="map"></div>
 
-        <!-- Map Legend -->
         <div class="map-legend">
             <div class="legend-title">Map Legend</div>
             <div class="legend-item">
@@ -565,7 +551,6 @@
             navLinks.classList.toggle('active');
         }
 
-        // ------------------ DATA FROM FLASK ------------------
 
         var originalRoute = {{ original_route | tojson }};
         var newRoute = {{ new_route | tojson }};
@@ -575,7 +560,6 @@
         var etaNew = {{ eta_new }};
         var congestedEdges = {{ congested_edges | tojson }};
 
-        // ------------------ MAP INIT ------------------
 
         var map = L.map('map').setView(hospital, 14);
 
@@ -583,7 +567,6 @@
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // ------------------ ICONS ------------------
 
         var hospitalIcon = L.icon({
             iconUrl: "https://cdn-icons-png.flaticon.com/512/1484/1484846.png",
@@ -595,7 +578,6 @@
             iconSize: [35, 35]
         });
 
-        // ------------------ MARKERS ------------------
 
         L.marker(hospital, { icon: hospitalIcon })
             .addTo(map)
@@ -605,7 +587,6 @@
             .addTo(map)
             .bindPopup("🚨 Accident Location");
 
-        // ------------------ DRAW ORIGINAL ROUTE ------------------
 
         var originalLine = L.polyline(originalRoute, {
             color: '#3B82F6',
@@ -614,7 +595,6 @@
 
         map.fitBounds(originalLine.getBounds());
 
-        // ------------------ DRAW CONGESTED EDGES ------------------
 
         congestedEdges.forEach(function (edge) {
             L.polyline(edge, {
@@ -624,13 +604,10 @@
             }).addTo(map);
         });
 
-        // ------------------ AMBULANCE ------------------
-
         var ambulance = L.marker(originalRoute[0], {
             icon: ambulanceIcon
         }).addTo(map);
 
-        // ------------------ MOVEMENT ------------------
 
         var animationInterval;
         var currentIndex = 0;
@@ -658,7 +635,6 @@
 
         startMovement();
 
-        // ------------------ TRAFFIC INJECTION ------------------
 
         function injectTraffic() {
             if (rerouted) return;
@@ -668,18 +644,15 @@
 
             moving = false;
 
-            // Remove original route
             if (originalLine) {
                 map.removeLayer(originalLine);
             }
 
-            // Draw new route
             L.polyline(newRoute, {
                 color: '#10B981',
                 weight: 6
             }).addTo(map);
 
-            // Update ETA display
             document.getElementById("etaNew").innerHTML = etaNew + " mins";
 
             activeRoute = newRoute;
@@ -692,7 +665,6 @@
             document.getElementById('trafficBtn').style.opacity = '0.5';
         }
 
-        // ------------------ CONTROLS ------------------
 
         function toggleMovement() {
             moving = !moving;
