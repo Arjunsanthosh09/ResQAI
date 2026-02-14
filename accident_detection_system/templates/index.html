@@ -488,7 +488,7 @@
                             triggerAccident(total, tiltAngle);
                         }
                         impactDetected = false;
-                    }, 1000); 
+                    }, 1000);
                 }
             });
         }
@@ -533,7 +533,6 @@
 
             accidentTriggered = true;
 
-            let severityLevel = classifySeverity(accValue, tilt);
 
             navigator.geolocation.getCurrentPosition(function (position) {
 
@@ -543,8 +542,10 @@
                 let data = {
                     lat: lat,
                     lon: lon,
-                    severity: severityLevel
+                    speed: accValue,   // send acceleration as speed
+                    weather: 0         // 0 = clear (you can improve later)
                 };
+
 
                 if (navigator.onLine) {
                     sendOnline(data);
@@ -569,8 +570,8 @@
             })
                 .then(response => response.json())
                 .then(res => {
-                    alert("🚨 " + data.severity +
-                        " Accident Sent to " + res.station);
+                    alert("🚨 " + res.severity +
+                        " Accident Sent to " + res.assigned_hospital);
                 })
                 .catch(() => {
                     sendOffline(data);

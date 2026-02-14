@@ -137,8 +137,8 @@
                         <td>{{ accident.lat }}</td>
                         <td>{{ accident.lon }}</td>
                         <td>
-                            {% if accident.severity == "Critical" %}
-                            <span class="severity-high">Critical</span>
+                            {% if accident.severity == "High" %}
+                            <span class="severity-high">High</span>
                             {% elif accident.severity == "Moderate" %}
                             <span class="severity-medium">Moderate</span>
                             {% else %}
@@ -147,7 +147,7 @@
                         </td>
                         <td>{{ accident.station }}</td>
                         <td>
-                            <a href="/optimize/{{ loop.index0 }}">
+                            <a href="{{ url_for('optimize_route', accident_id=accident.id) }}">
                                 <button>Optimize Route</button>
                             </a>
 

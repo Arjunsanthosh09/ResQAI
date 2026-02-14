@@ -2,131 +2,188 @@
 <html>
 <head>
     <title>Smart Ambulance Routing</title>
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <style>
         body {
+            margin: 0;
+            font-family: Arial;
             background: #0f172a;
             color: white;
             text-align: center;
-            font-family: Arial;
         }
 
-        svg {
+        #map {
+            height: 85vh;
+            width: 100%;
+        }
+
+        .info-box {
+            padding: 10px;
             background: #1e293b;
-            border-radius: 15px;
-            margin-top: 30px;
-        }
-
-        .road {
-            stroke: #4ade80;
-            stroke-width: 4;
-        }
-
-        .congested {
-            stroke: red;
-            stroke-width: 6;
-            stroke-dasharray: 10;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0.3; }
-        }
-
-        .node {
-            fill: yellow;
-        }
-
-        .hospital {
-            fill: lime;
-        }
-
-        .accident {
-            fill: orange;
-        }
-
-        .ambulance {
-            fill: red;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 10px;
         }
 
         button {
-            margin-top: 20px;
             padding: 10px 20px;
+            margin: 10px;
             font-size: 16px;
             background: #38bdf8;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0ea5e9;
         }
     </style>
 </head>
 <body>
 
-<h1>🚑 Smart Ambulance Routing Control</h1>
+<h2>🚑 Smart Ambulance Live Routing</h2>
 
+<div class="info-box">
+    ⏱ Original ETA: <b id="etaOriginal">{{ eta_original }} mins</b><br>
+    ⏱ Current ETA: <b id="etaNew">{{ eta_original }} mins</b>
+</div>
+
+<br>
 <button onclick="injectTraffic()">🚧 Inject Traffic</button>
 
-<svg width="800" height="500" id="map">
-
-    <!-- Roads -->
-    <line id="AB" class="road" x1="100" y1="100" x2="300" y2="120"/>
-    <line id="BC" class="road" x1="300" y1="120" x2="500" y2="200"/>
-    <line id="CD" class="road" x1="500" y1="200" x2="650" y2="350"/>
-    <line id="AC" class="road" x1="100" y1="100" x2="500" y2="200"/>
-
-    <!-- Nodes -->
-    <circle cx="100" cy="100" r="10" class="hospital"/>
-    <text x="80" y="80">Hospital</text>
-
-    <circle cx="650" cy="350" r="10" class="accident"/>
-    <text x="630" y="380">Accident</text>
-
-    <circle id="ambulance" cx="100" cy="100" r="8" class="ambulance"/>
-
-</svg>
+<div id="map"></div>
 
 <script>
 
-let normalRoute = [
-    {x:100,y:100},
-    {x:300,y:120},
-    {x:500,y:200},
-    {x:650,y:350}
-];
+// ------------------ DATA FROM FLASK ------------------
 
-let alternateRoute = [
-    {x:100,y:100},
-    {x:500,y:200},
-    {x:650,y:350}
-];
+var originalRoute = {{ original_route | tojson }};
+var newRoute = {{ new_route | tojson }};
+var accident = [{{ accident_lat }}, {{ accident_lon }}];
+var hospital = [{{ hospital_lat }}, {{ hospital_lon }}];
+var etaOriginal = {{ eta_original }};
+var etaNew = {{ eta_new }};
+var congestedEdges = {{ congested_edges | tojson }};
 
-let ambulance = document.getElementById("ambulance");
+// ------------------ MAP INIT ------------------
 
-function move(route) {
-    let i = 0;
+var map = L.map('map').setView(hospital, 14);
 
-    function step() {
-        if (i < route.length) {
-            ambulance.setAttribute("cx", route[i].x);
-            ambulance.setAttribute("cy", route[i].y);
-            i++;
-            setTimeout(step, 1000);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '©️ OpenStreetMap'
+}).addTo(map);
+
+// ------------------ ICONS ------------------
+
+var hospitalIcon = L.icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/1484/1484846.png",
+    iconSize: [35, 35]
+});
+
+var ambulanceIcon = L.icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/2967/2967350.png",
+    iconSize: [35, 35]
+});
+
+// ------------------ MARKERS ------------------
+
+L.marker(hospital, { icon: hospitalIcon })
+    .addTo(map)
+    .bindPopup("🏥 Hospital");
+
+L.marker(accident)
+    .addTo(map)
+    .bindPopup("🚨 Accident");
+
+// ------------------ DRAW ORIGINAL ROUTE ------------------
+
+var originalLine = L.polyline(originalRoute, {
+    color: 'blue',
+    weight: 6
+}).addTo(map);
+
+map.fitBounds(originalLine.getBounds());
+
+// ------------------ DRAW CONGESTED EDGES ------------------
+
+congestedEdges.forEach(function(edge) {
+    L.polyline(edge, {
+        color: 'red',
+        weight: 4,
+        dashArray: "6,6"
+    }).addTo(map);
+});
+
+// ------------------ AMBULANCE ------------------
+
+var ambulance = L.marker(originalRoute[0], {
+    icon: ambulanceIcon
+}).addTo(map);
+
+// ------------------ MOVEMENT ------------------
+
+var animationInterval;
+var currentIndex = 0;
+var activeRoute = originalRoute;
+var moving = true;
+var rerouted = false;
+
+function startMovement() {
+
+    animationInterval = setInterval(function() {
+
+        if (!moving) return;
+
+        if (currentIndex >= activeRoute.length) {
+            clearInterval(animationInterval);
+            alert("🚑 Ambulance Reached Destination!");
+            return;
         }
-    }
 
-    step();
+        ambulance.setLatLng(activeRoute[currentIndex]);
+        map.panTo(activeRoute[currentIndex], { animate: true, duration: 0.3 });
+
+        currentIndex++;
+
+    }, 200);
 }
 
-move(normalRoute);
+startMovement();
+
+// ------------------ TRAFFIC INJECTION ------------------
 
 function injectTraffic() {
 
-    alert("Heavy Traffic Detected on Main Road!");
+    if (rerouted) return;
 
-    // Make one road congested
-    document.getElementById("BC").classList.add("congested");
+    alert("🚧 Heavy Traffic Detected! AI Re-routing...");
 
-    // Reroute ambulance
-    move(alternateRoute);
+    moving = false;
+
+    // Remove original route
+    if (originalLine) {
+        map.removeLayer(originalLine);
+    }
+
+    // Draw new route
+    L.polyline(newRoute, {
+        color: 'green',
+        weight: 6
+    }).addTo(map);
+
+    // Update ETA display
+    document.getElementById("etaNew").innerHTML = etaNew + " mins";
+
+    activeRoute = newRoute;
+    currentIndex = 0;
+    moving = true;
+    rerouted = true;
 }
 
 </script>
