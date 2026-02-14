@@ -3,53 +3,293 @@
 
 <head>
     <title>ResQAI Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-dark: #1F2937;
+            --accent-blue: #3B82F6;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --bg-white: #FFFFFF;
+            --bg-gray: #F9FAFB;
+            --border-gray: #E5E7EB;
+            --text-dark: #111827;
+            --text-gray: #6B7280;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #0f172a;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gray);
+            color: var(--text-dark);
+            padding-top: 80px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-gray);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px var(--shadow);
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-red), var(--warning-orange));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-name span {
+            color: var(--primary-red);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-red);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--success-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
             color: white;
-            padding: 20px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1.25rem;
+            background: var(--bg-gray);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 2rem;
         }
 
         h2 {
-            text-align: center;
-            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
         }
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
+        .header-subtitle {
+            color: var(--text-gray);
+            font-size: 1rem;
         }
 
+        /* Stats Cards */
         .stats-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            width: 30%;
-            text-align: center;
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-gray);
+            box-shadow: 0 1px 3px var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), var(--warning-orange));
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--accent-blue), var(--success-green));
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--success-green), var(--accent-blue));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
 
         .stat-value {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
         }
 
         .stat-label {
-            font-size: 14px;
-            opacity: 0.7;
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            font-weight: 500;
         }
 
+        /* Table Wrapper */
         .table-wrapper {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-gray);
+            box-shadow: 0 1px 3px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-gray);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--border-gray);
         }
 
         table {
@@ -57,68 +297,264 @@
             border-collapse: collapse;
         }
 
-        th,
-        td {
-            padding: 10px;
-            text-align: center;
-        }
-
         th {
-            background: #334155;
+            background: var(--bg-gray);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-gray);
         }
 
-        tr:nth-child(even) {
-            background: #0f172a;
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-gray);
+            color: var(--text-dark);
+        }
+
+        tr:hover {
+            background: var(--bg-gray);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Severity Badges */
+        .severity-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .severity-high {
-            color: red;
-            font-weight: bold;
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--primary-red);
         }
 
         .severity-medium {
-            color: orange;
-            font-weight: bold;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-orange);
         }
 
         .severity-low {
-            color: lime;
-            font-weight: bold;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
         }
 
+        /* Action Button */
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--primary-red), #EF4444);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Route Result */
         #routeResult {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #38bdf8;
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-gray);
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--text-dark);
+            line-height: 1.8;
+            box-shadow: 0 1px 3px var(--shadow);
+        }
+
+        #routeResult:empty {
+            display: none;
+        }
+
+        .route-label {
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .route-value {
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+
+        /* Section Headers */
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 2.5rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Traffic Status Indicator */
+        .traffic-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .traffic-low {
+            background: var(--success-green);
+            box-shadow: 0 0 6px var(--success-green);
+        }
+
+        .traffic-moderate {
+            background: var(--warning-orange);
+            box-shadow: 0 0 6px var(--warning-orange);
+        }
+
+        .traffic-high {
+            background: var(--primary-red);
+            box-shadow: 0 0 6px var(--primary-red);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-white);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-gray);
+                box-shadow: 0 4px 6px var(--shadow);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .stats-header {
+                grid-template-columns: 1fr;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .user-section {
+                gap: 0.5rem;
+            }
+
+            .logout-btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 
 <body>
-
-    <h2>🚨 ResQAI Accident Dashboard</h2>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo-section">
+                <div class="logo">🚑</div>
+                <div class="brand-name">ResQ<span>AI</span></div>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="#dashboard" class="active">Dashboard</a>
+                <a href="#incidents">Incidents</a>
+                <a href="#traffic">Traffic</a>
+                <a href="#analytics">Analytics</a>
+            </div>
+            <div class="user-section">
+                <div class="user-avatar">H</div>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2>🚨 Accident Dashboard</h2>
+            <p class="header-subtitle">Real-time monitoring and emergency response management</p>
+        </div>
 
-        <!-- ===== STATS ===== -->
+        <!-- Stats Cards -->
         <div class="stats-header">
             <div class="stat-card">
+                <div class="stat-icon">📊</div>
                 <div class="stat-value">{{ accidents|length }}</div>
                 <div class="stat-label">Total Incidents</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🔄</div>
                 <div class="stat-value">24/7</div>
                 <div class="stat-label">Active Monitoring</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🎯</div>
                 <div class="stat-value">99.7%</div>
                 <div class="stat-label">Detection Accuracy</div>
             </div>
         </div>
 
-        <!-- ===== ACCIDENT TABLE ===== -->
+        <!-- Accident Table -->
         <div class="table-wrapper">
+            <div class="table-header">
+                <div class="table-title">
+                    <span>📋</span>
+                    <span>Active Incidents</span>
+                </div>
+                <div class="table-actions">
+                    <button class="filter-btn">All</button>
+                    <button class="filter-btn">High Priority</button>
+                    <button class="filter-btn">Recent</button>
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -133,91 +569,109 @@
                 <tbody>
                     {% for accident in accidents %}
                     <tr>
-                        <td>{{ accident.id }}</td>
+                        <td><strong>#{{ accident.id }}</strong></td>
                         <td>{{ accident.lat }}</td>
                         <td>{{ accident.lon }}</td>
                         <td>
                             {% if accident.severity == "High" %}
-                            <span class="severity-high">High</span>
+                            <span class="severity-badge severity-high">High</span>
                             {% elif accident.severity == "Moderate" %}
-                            <span class="severity-medium">Moderate</span>
+                            <span class="severity-badge severity-medium">Moderate</span>
                             {% else %}
-                            <span class="severity-low">Low</span>
+                            <span class="severity-badge severity-low">Low</span>
                             {% endif %}
                         </td>
                         <td>{{ accident.station }}</td>
                         <td>
                             <a href="{{ url_for('optimize_route', accident_id=accident.id) }}">
-                                <button>Optimize Route</button>
+                                <button class="action-btn">Optimize Route</button>
                             </a>
-
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-
             </table>
         </div>
 
-        <!-- ===== LIVE TRAFFIC ===== -->
-        <h3 style="margin-top:40px;">🚦 Live Traffic Status</h3>
-
+        <!-- Live Traffic Section -->
+        <h3>🚦 Live Traffic Status</h3>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Road</th>
-                        <th>Traffic</th>
+                        <th>Traffic Condition</th>
                         <th>Estimated Time</th>
                     </tr>
                 </thead>
-                <tbody id="trafficBody"></tbody>
+                <tbody id="trafficBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-gray);">Loading traffic data...</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
-        <!-- ===== EMERGENCY ROUTE ===== -->
-        <h3 style="margin-top:40px;">🧭 Emergency Route Optimization</h3>
-        <p id="routeResult"></p>
-
+        <!-- Emergency Route Optimization -->
+        <h3>🧭 Emergency Route Optimization</h3>
+        <div id="routeResult"></div>
     </div>
 
     <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
 
         // Load Traffic Table
         function loadTraffic() {
             fetch("/traffic_status")
                 .then(response => response.json())
                 .then(data => {
-
                     let body = document.getElementById("trafficBody");
                     body.innerHTML = "";
 
                     data.forEach(row => {
+                        let trafficClass = 'traffic-low';
+                        if (row.traffic === 'High' || row.traffic === 'Heavy') {
+                            trafficClass = 'traffic-high';
+                        } else if (row.traffic === 'Moderate' || row.traffic === 'Medium') {
+                            trafficClass = 'traffic-moderate';
+                        }
+
                         body.innerHTML += `
                     <tr>
-                        <td>${row.road}</td>
-                        <td>${row.traffic}</td>
+                        <td><strong>${row.road}</strong></td>
+                        <td>
+                            <span class="traffic-indicator ${trafficClass}"></span>
+                            ${row.traffic}
+                        </td>
                         <td>${row.time} min</td>
                     </tr>
                 `;
                     });
+                })
+                .catch(() => {
+                    document.getElementById("trafficBody").innerHTML = 
+                        '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">Unable to load traffic data</td></tr>';
                 });
         }
-
 
         function optimizeRoute(id) {
             fetch("/optimize_route/" + id)
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById("routeResult").innerHTML =
-                        "Accident ID: " + id +
-                        "<br>Best Route: " + data.path.join(" → ") +
-                        "<br>Estimated Time: " + data.estimated_time + " mins";
+                        '<div style="line-height: 2;">' +
+                        '<div><span class="route-label">Accident ID:</span> <span class="route-value">#' + id + '</span></div>' +
+                        '<div><span class="route-label">Best Route:</span> <span class="route-value">' + data.path.join(" → ") + '</span></div>' +
+                        '<div><span class="route-label">Estimated Time:</span> <span class="route-value">' + data.estimated_time + ' mins</span></div>' +
+                        '</div>';
                 });
         }
 
-
-
+        // Load traffic data on page load
+        window.addEventListener('load', loadTraffic);
     </script>
 
 </body>

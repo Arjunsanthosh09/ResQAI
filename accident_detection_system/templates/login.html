@@ -1,40 +1,540 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Hospital Login</title>
+    <title>Hospital Login - ResQAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-dark: #1F2937;
+            --accent-blue: #3B82F6;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --bg-white: #FFFFFF;
+            --bg-gray: #F9FAFB;
+            --border-gray: #E5E7EB;
+            --text-dark: #111827;
+            --text-gray: #6B7280;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial;
-            background: #111;
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gray);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background Elements */
+        .bg-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--primary-red), var(--warning-orange));
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--success-green));
+            bottom: -50px;
+            right: -50px;
+            animation-delay: 5s;
+        }
+
+        .shape3 {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--warning-orange), var(--primary-red));
+            top: 50%;
+            right: 10%;
+            animation-delay: 10s;
+        }
+
+        .shape4 {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--success-green), var(--accent-blue));
+            bottom: 20%;
+            left: 10%;
+            animation-delay: 15s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(50px, -50px) rotate(90deg);
+            }
+            50% {
+                transform: translate(0, -100px) rotate(180deg);
+            }
+            75% {
+                transform: translate(-50px, -50px) rotate(270deg);
+            }
+        }
+
+        /* Grid Pattern */
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(229, 231, 235, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(229, 231, 235, 0.5) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+
+        /* Floating Icons */
+        .floating-icons {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.05;
+            animation: floatIcon 15s infinite ease-in-out;
+        }
+
+        .icon:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s; }
+        .icon:nth-child(2) { top: 60%; left: 80%; animation-delay: 3s; }
+        .icon:nth-child(3) { top: 80%; left: 20%; animation-delay: 6s; }
+        .icon:nth-child(4) { top: 30%; left: 70%; animation-delay: 9s; }
+        .icon:nth-child(5) { top: 50%; left: 40%; animation-delay: 12s; }
+
+        @keyframes floatIcon {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-50px) rotate(180deg);
+            }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            max-width: 450px;
+            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo Section */
+        .logo-container {
             text-align: center;
-            margin-top: 100px;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-red), var(--warning-orange));
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(220, 38, 38, 0.5);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .brand-name span {
+            color: var(--primary-red);
+        }
+
+        .subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), var(--warning-orange), var(--accent-blue));
+            animation: gradientSlide 3s linear infinite;
+        }
+
+        @keyframes gradientSlide {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .card-subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
         }
 
         input {
-            padding: 10px;
-            margin: 10px;
-            width: 200px;
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 10px;
+            background: var(--bg-gray);
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary-red);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        }
+
+        input:focus + .input-icon {
+            color: var(--primary-red);
+        }
+
+        input::placeholder {
+            color: var(--text-gray);
         }
 
         button {
-            padding: 10px 20px;
-            background: #d32f2f;
-            border: none;
+            width: 100%;
+            padding: 1rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #EF4444 100%);
             color: white;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Remember Me */
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-gray);
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #B91C1C;
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-gray);
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        .login-footer a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+            }
+
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+
+            .brand-name {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
+    <!-- Background Elements -->
+    <div class="grid-pattern"></div>
 
-<h2>🏥 ResQAI Hospital Login</h2>
+    <div class="bg-shapes">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+        <div class="shape shape4"></div>
+    </div>
 
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-</form>
+    <div class="floating-icons">
+        <div class="icon">🏥</div>
+        <div class="icon">🚑</div>
+        <div class="icon">💊</div>
+        <div class="icon">⚕️</div>
+        <div class="icon">❤️</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo-container">
+          
+            <div class="brand-name">ResQ<span>AI</span></div>
+            <div class="subtitle">Hospital Management System</div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card">
+            <h2>Hospital Login</h2>
+            <p class="card-subtitle">Enter your credentials to access the dashboard</p>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                        <span class="input-icon">👤</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <span class="input-icon">🔒</span>
+                    </div>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+
+                <button type="submit">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                Need help? <a href="#">Contact Support</a>
+            </div>
+        </div>
+    </div>
 
 </body>
+
 </html>
