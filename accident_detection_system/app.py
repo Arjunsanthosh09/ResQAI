@@ -298,6 +298,43 @@ def optimize_route(accident_id):
         congested_edges=congested_coords
     )
 
+@app.route("/dynamic_reroute", methods=["POST"])
+def dynamic_reroute():
+
+    data = request.json
+
+    lat = float(data["lat"])
+    lon = float(data["lon"])
+    hospital_lat = float(data["hospital_lat"])
+    hospital_lon = float(data["hospital_lon"])
+
+    orig_node = ox.distance.nearest_nodes(G, lon, lat)
+    dest_node = ox.distance.nearest_nodes(G, hospital_lon, hospital_lat)
+
+    # Create congestion copy
+    G_congested = G.copy()
+
+    # Inject heavy traffic randomly
+    for u, v, key, edge_data in G_congested.edges(keys=True, data=True):
+        if np.random.rand() < 0.25:  # 25% congestion
+            edge_data["length"] *= 4  # Slow down road heavily
+
+    route = nx.astar_path(G_congested, orig_node, dest_node, weight="length")
+
+    cost = nx.path_weight(G_congested, route, weight="length")
+
+    avg_speed = 11.11
+    eta = round(cost / avg_speed / 60, 2)
+
+    new_route = [(G.nodes[n]["y"], G.nodes[n]["x"]) for n in route]
+
+    return jsonify({
+        "new_route": new_route,
+        "eta": eta
+    })
+
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
